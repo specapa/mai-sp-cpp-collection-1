@@ -14,6 +14,24 @@ class allocator_boundary_tags final :
 {
 
 private:
+    std::mutex& get_mutex() const noexcept;
+    allocator_with_fit_mode::fit_mode& get_fit_mod() const noexcept;
+    static size_t get_overall_size(void* trusted_memory) noexcept;
+
+    static void** get_first_block_ptr(void* trusted_memory) noexcept;
+
+    static size_t get_next_free_size(void* occupied_block_start, void* trusted_memory) noexcept;
+
+    static size_t get_occupied_size(void* block_start) noexcept;
+    static void* get_previous_from_occupied(void* block_start) noexcept;
+    static void* get_next_from_occupied(void* block_start) noexcept;
+    static void* get_parent_from_occupied(void* block_start) noexcept;
+
+    void* get_first(size_t bytes) const noexcept;
+    void* get_best(size_t bytes) const noexcept;
+    void* get_worst(size_t bytes) const noexcept;
+
+    size_t get_free_size() const noexcept;
 
     static constexpr const size_t allocator_metadata_size = sizeof(memory_resource*) + sizeof(allocator_with_fit_mode::fit_mode) +
                                                             sizeof(size_t) + sizeof(std::mutex) + sizeof(void*);
@@ -67,8 +85,6 @@ public:
 private:
 
     std::vector<allocator_test_utils::block_info> get_blocks_info_inner() const override;
-
-/** TODO: Highly recommended for helper functions to return references */
 
     class boundary_iterator
     {
